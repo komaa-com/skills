@@ -155,8 +155,8 @@ A plain `GET` on the call path is not a health check.
 ## Related skills
 
 - [`setup-standin`](../setup-standin/): connection secret and SDK
-- [`standin-msteams`](../standin-msteams/): OpenClaw listener
-- [`standin-hermes`](../standin-hermes/): Hermes listener
+- [`standin-openclaw`](../standin-openclaw/): OpenClaw listener
+- [`standin-hermes-agent`](../standin-hermes-agent/): Hermes Agent listener
 
 ## References
 

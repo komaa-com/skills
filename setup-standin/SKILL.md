@@ -29,25 +29,31 @@ Ask which runtime they want. Do not install both.
 
 | Path | When | Next skill |
 |---|---|---|
-| **OpenClaw** (TypeScript) | They already run an OpenClaw gateway | [`standin-msteams`](../standin-msteams/) |
-| **Hermes Agent** (Python) | They already run Hermes | [`standin-hermes`](../standin-hermes/) |
+| **OpenClaw** (TypeScript) | They already run an OpenClaw gateway | [`standin-openclaw`](../standin-openclaw/) |
+| **Hermes Agent** (Python) | They already run Hermes | [`standin-hermes-agent`](../standin-hermes-agent/) |
 | **StandIn Autopilot** | They do not want to run a gateway | Stop here. Turn Autopilot on in the portal. |
 
 If they are unsure, default to whichever language the rest of the project is
 in. Autopilot is the right answer only when they say they do not want to
 operate a worker.
 
+Install the SDK and connect. In the
+[portal](https://standin.komaa.com/dashboard) you choose a plan, set how
+long the teammate can talk, and turn on a knowledge base when you want
+it to answer from your docs.
+
 ### Step 2: Create the connection in the portal
 
-The secret is issued by StandIn. There is no StandIn API key to mint by hand.
+StandIn gives you the connection secret in the portal.
 
 1. Open <https://standin.komaa.com/dashboard>
 2. Add **StandIn** from the Microsoft Teams Store (Managed Bot), or use their
    own Azure bot if they already have one. Managed Bot is the default.
 3. Create or open the identity. The portal shows the **connection secret
    once**, on the completion screen.
-4. Receive the secret in chat. Treat it as sensitive: do not echo it back,
-   do not commit it, do not log it.
+4. Have them save it locally: `export STANDIN_SECRET=...` in their own
+   terminal, a secret manager, or the gateway config on disk. Keep it off
+   this chat, off git, and out of logs.
 
 `secret` / `STANDIN_SECRET` must be a **plain string**. An object or an
 unresolved reference becomes an empty secret, and the listener never starts.
@@ -81,8 +87,8 @@ PyPI. It is the application the plugin loads into.
 
 ### Step 4: Hand off
 
-- OpenClaw → [`standin-msteams`](../standin-msteams/)
-- Hermes → [`standin-hermes`](../standin-hermes/)
+- OpenClaw → [`standin-openclaw`](../standin-openclaw/)
+- Hermes → [`standin-hermes-agent`](../standin-hermes-agent/)
 - After the plugin is configured → [`expose-standin`](../expose-standin/)
 
 ## Gotchas
@@ -109,8 +115,8 @@ PyPI. It is the application the plugin loads into.
 
 ## Related skills
 
-- [`standin-msteams`](../standin-msteams/): OpenClaw plugin
-- [`standin-hermes`](../standin-hermes/): Hermes plugin
+- [`standin-openclaw`](../standin-openclaw/): OpenClaw plugin
+- [`standin-hermes-agent`](../standin-hermes-agent/): Hermes Agent plugin
 - [`expose-standin`](../expose-standin/): publish `/msteams/calling`
 
 ## References

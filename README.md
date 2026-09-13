@@ -9,7 +9,7 @@
 <p align="center">
   <a href="#install">Install</a> •
   <a href="#skills">Skills</a> •
-  <a href="#supported-agents">Supported agents</a> •
+  <a href="#compatible-agents">Compatible agents</a> •
   <a href="https://github.com/komaa-com/standin">SDK</a> •
   <a href="https://docs.komaa.com">Docs</a>
 </p>
@@ -25,7 +25,7 @@
 npx skills add komaa-com/skills
 
 # Or install one
-npx skills add komaa-com/skills --skill standin-msteams
+npx skills add komaa-com/skills --skill standin-openclaw
 ```
 
 Skills land in `~/.agents/skills/<skill-name>/` (global) or `./.agents/skills/<skill-name>/` (project-local), with symlinks into each detected agent's skills directory.
@@ -35,15 +35,17 @@ Skills land in `~/.agents/skills/<skill-name>/` (global) or `./.agents/skills/<s
 | Skill | What it teaches the agent |
 |---|---|
 | [`setup-standin`](./setup-standin) | Get a StandIn connection from the portal, install the SDK, and pick OpenClaw, Hermes, or Autopilot. |
-| [`standin-msteams`](./standin-msteams) | Load the OpenClaw plugin, merge `openclaw.json`, and bring the realtime voice provider onto a Teams call. |
-| [`standin-hermes`](./standin-hermes) | Enable the Hermes plugin, set allowlist and realtime keys, and serve the call listener. |
+| [`standin-openclaw`](./standin-openclaw) | Load the OpenClaw plugin, merge `openclaw.json`, and bring the realtime voice provider onto a Teams call. |
+| [`standin-hermes-agent`](./standin-hermes-agent) | Enable the Hermes Agent plugin, set allowlist and realtime keys, and serve the call listener. |
 | [`expose-standin`](./expose-standin) | Publish `/msteams/calling`, probe the mount, and register the agent voice URL in the portal. |
 
 The tunnel commands live in `expose-standin` only. The plugin skills link there instead of inventing a second spelling.
 
-## Supported agents
+## Compatible agents
 
-Skills work in harnesses that consume the [Agent Skills](https://agentskills.io) standard, including Claude Code, Cursor, GitHub Copilot, Codex, Cline, Goose, Amp, Windsurf, OpenClaw, and Hermes Agent.
+Compatible with [Agent Skills](https://agentskills.io) consumers, including
+Claude Code, Cursor, GitHub Copilot, Codex, Cline, Goose, Amp, Windsurf,
+OpenClaw, and Hermes Agent.
 
 The `skills` CLI auto-detects agents on the machine and installs the symlinks in one shot.
 
@@ -54,7 +56,17 @@ The `skills` CLI auto-detects agents on the machine and installs the symlinks in
 - A StandIn connection secret from [the portal](https://standin.komaa.com/dashboard)
 - A public URL for `/msteams/calling` (see [`expose-standin`](./expose-standin))
 
-`setup-standin` walks the user through the portal and the install. Do not paste the connection secret into git.
+`setup-standin` walks the user through the portal and the install. Keep the
+connection secret on their machine.
+
+## Check
+
+```bash
+python3 check.py
+```
+
+Confirms skill names, relative links, secret-handling wording, and that the
+OpenClaw plugin id stays `standin-msteams`.
 
 ## License
 

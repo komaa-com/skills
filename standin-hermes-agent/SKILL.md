@@ -1,8 +1,8 @@
 ---
-name: standin-hermes
+name: standin-hermes-agent
 description: >
   Put a Hermes Agent on a Microsoft Teams call with standin-sdk[hermes-agent].
-  Use when the user wants Hermes, Nous Research Hermes, msteams_bridge,
+  Use when the user wants Hermes Agent, Nous Research Hermes, msteams_bridge,
   Microsoft Teams calling from Python, or a realtime speech-to-speech
   Teams listener next to Hermes.
 license: MIT
@@ -19,23 +19,22 @@ metadata:
 # Connect Hermes Agent to Microsoft Teams
 
 Give the Hermes agent a seat in a live Microsoft Teams call. StandIn joins
-the call. The plugin loads **in-process** through the `hermes_agent.plugins`
-entry point. There is no HTTP hop to Hermes and no second service.
+the call. The plugin runs through the Hermes integration and routes voice
+calls to the configured realtime provider.
 
-The realtime model hears the caller and answers. Hermes is reached only when
-the model calls `hermes_agent_consult`. Hermes never sees audio.
+The realtime model hears the caller and answers. When a turn needs Hermes
+tools, files, or skills, the model calls `hermes_agent_consult`.
 
 ```
 Microsoft Teams call
         │
         ▼
-StandIn                         joins the call, owns the Microsoft side
-        │  one authenticated WebSocket per call
-        ▼
-standin-sdk[hermes-agent]       realtime session on the call
+StandIn                         joins the call
         │
-        ├── realtime model      conversation
-        └── hermes_agent_consult    lookups, files, web, skills
+        ▼
+standin-sdk[hermes-agent]       realtime provider on the call
+        │
+        └── hermes_agent_consult    tools, files, skills
 ```
 
 ## Workflow
@@ -75,6 +74,8 @@ from `session.start.caller.aad_id` on an inbound call. Emails never match.
 Each config key also has a `MSTEAMS_BRIDGE_*` environment fallback.
 
 ### Step 3: Export secrets and check before serving
+
+The user types these in **their own terminal**, not in this chat:
 
 ```bash
 export STANDIN_SECRET=...      # from the StandIn portal, plain string
@@ -123,11 +124,13 @@ URL as the identity's agent calling URL, then call the StandIn number.
 false). The agent stays silent until Teams reports recording active unless
 you set it false.
 
-`meeting_recap` is off until `true`. Hang-up does not wait. Needs the
-StandIn Managed Bot chat lane and a summarization consult. Unfinished recaps
-sit in `STANDIN_RECAP_DIR`, else `STANDIN_STATE_DIR/recap`, else
-`~/.standin/state/recap`. Best-effort unless that directory survives a
-restart.
+`meeting_recap` is off until `true`. Hang-up returns while the minutes
+post. Recap uses a summarization consult on the Hermes host and the
+StandIn Managed Bot outbound chat lane.
+
+Unfinished recaps sit in `STANDIN_RECAP_DIR`, else `STANDIN_STATE_DIR/recap`,
+else `~/.standin/state/recap`. Point that directory at disk that survives a
+restart if you want unfinished minutes to send after one.
 
 In a meeting the agent stays silent until addressed (`require_address`,
 wake phrases default `assistant, hermes`). `follow_up_window_ms` is 12000.
@@ -177,7 +180,7 @@ in the portal and skip this plugin.
 
 - [`setup-standin`](../setup-standin/): portal secret and pip install
 - [`expose-standin`](../expose-standin/): funnel, probe, register URL
-- [`standin-msteams`](../standin-msteams/): OpenClaw twin
+- [`standin-openclaw`](../standin-openclaw/): OpenClaw twin
 
 ## References
 

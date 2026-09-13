@@ -1,10 +1,10 @@
 ---
-name: standin-msteams
+name: standin-openclaw
 description: >
   Put an OpenClaw agent on a Microsoft Teams call with the StandIn SDK.
   Use when the user wants Microsoft Teams calling, StandIn, standin-sdk,
-  @komaa/standin-sdk, standin-msteams, or a Teams voice listener inside
-  OpenClaw.
+  @komaa/standin-sdk, OpenClaw, standin-msteams, or a Teams voice listener
+  inside OpenClaw.
 license: MIT
 compatibility: >
   Requires OpenClaw 2026.6.10+, Node.js 20+, @komaa/standin-sdk installed
@@ -18,8 +18,7 @@ metadata:
 # Connect OpenClaw to Microsoft Teams
 
 Give the OpenClaw agent a seat in a live Microsoft Teams call. StandIn joins
-the call. This plugin loads **inside** the OpenClaw gateway. There is no
-`node app.js` to run.
+the call. This plugin loads **inside** the OpenClaw gateway.
 
 ```
 Microsoft Teams call
@@ -47,6 +46,9 @@ the exception: it can post minutes after hang-up.
 
 Need `@komaa/standin-sdk` next to the gateway and a plain-string connection
 secret. If either is missing, run [`setup-standin`](../setup-standin/) first.
+
+The plugin id is `standin-msteams`. That is the key in `plugins.entries` and
+the prefix on the boot log.
 
 ### Step 2: Point OpenClaw at the plugin directory
 
@@ -76,7 +78,7 @@ which refuses every call.
       "standin-msteams": {
         "enabled": true,
         "config": {
-          "secret": "PASTE_THE_CONNECTION_SECRET",
+          "secret": "",
           "inboundPolicy": "allowlist",
           "allowFrom": [
             "00000000-0000-0000-0000-000000000000"
@@ -93,7 +95,7 @@ which refuses every call.
             "provider": "openai",
             "providers": {
               "openai": {
-                "apiKey": "sk-REPLACE_ME",
+                "apiKey": "",
                 "voice": "alloy"
               }
             },
@@ -106,8 +108,9 @@ which refuses every call.
 }
 ```
 
-Do not commit the secret or the provider key. Prefer host env references if
-the gateway supports them.
+Leave `"secret"` empty in what you write here (or a host env reference if
+the gateway supports them). The user fills it on disk. Keep live secrets
+and provider keys off this chat, off git, and out of logs.
 
 Laptop plus Tailscale Funnel: `bindAddress` `127.0.0.1`. A container behind
 ingress can leave the SDK default `0.0.0.0`.
@@ -153,14 +156,16 @@ codes on this path.
 
 ## Meeting recap
 
-Off unless `meetingRecap` is exactly `true`. Hang-up does not wait for the
-post. Needs the StandIn Managed Bot chat lane and a summarization consult.
-The sandbox has no chat. A bring-your-own-bot identity will not post recap
-on this socket.
+Off unless `meetingRecap` is exactly `true`. Hang-up returns while the
+minutes post.
+
+`meetingRecap` posts through the OpenClaw consult integration and the
+managed outbound chat lane on StandIn's bot. That is the recap path for
+this plugin.
 
 Unfinished recaps sit in `STANDIN_RECAP_DIR`, else `STANDIN_STATE_DIR/recap`,
-else `~/.standin/state/recap`. Treat recap as best-effort unless that
-directory survives a process or container restart.
+else `~/.standin/state/recap`. Point that directory at disk that survives a
+restart if you want unfinished minutes to send after one.
 
 `sessionScope` (`per-call`, `per-thread`, `per-aad`) keys the consult that
 writes the minutes, not the voice session. Voice is always per call.
@@ -208,7 +213,7 @@ portal and skip this plugin.
 
 - [`setup-standin`](../setup-standin/): portal secret and `npm install`
 - [`expose-standin`](../expose-standin/): funnel, probe, register URL
-- [`standin-hermes`](../standin-hermes/): Python twin
+- [`standin-hermes-agent`](../standin-hermes-agent/): Python twin
 
 ## References
 
